@@ -6,7 +6,8 @@
 -- Write your answer in the blank space below.
 -- Make sure to test it against the northwind database, using
 -- either pgAdmin or psql!
-SELECT * FROM categories;
+SELECT * FROM categories
+ORDER BY category_id;
 
 
 -- 1.2
@@ -26,7 +27,8 @@ ORDER BY city DESC;
 -- Hint: To check if a product is discontinued, use the WHERE clause to
 -- filter for rows/records where the discontinued field is equal to true. 
 SELECT product_id, product_name FROM products
-WHERE discontinued = true;
+WHERE discontinued = true
+ORDER BY product_id;
 
 
 -- 1.4
@@ -35,7 +37,8 @@ WHERE discontinued = true;
 -- (i.e. those WHERE the reports_to field IS NULL).
 -- Order the results by employee_id.
  SELECT first_name, last_name FROM employees
- WHERE reports_to IS NULL;
+ WHERE reports_to IS NULL
+ ORDER BY employee_id;
 
 
 -- 1.5
@@ -81,7 +84,7 @@ SELECT COUNT(*) FROM orders;
 -- orders has each customer made?
 SELECT customer_id, COUNT(order_id) AS order_count FROM orders
 GROUP BY customer_id 
-ORDER BY order_count DESC;
+ORDER BY order_count DESC, customer_id ASC; -- I did not replce "." with ","
 
 
 -- 2.3
@@ -176,7 +179,8 @@ SELECT AVG(shipper_count) FROM shippers_per_customer;
 
 SELECT p.product_name, c.category_name 
 FROM products p 
-JOIN categories c ON p.category_id = c.category_id;
+JOIN categories c ON p.category_id = c.category_id
+ORDER BY p.product_id;
 
 
 -- 3.2
@@ -212,6 +216,9 @@ JOIN categories c ON p.category_id = c.category_id;
 SELECT DISTINCT r.region_description, t.territory_description, e.last_name, e.first_name
 FROM employees e
 JOIN employees_territories et ON e.employee_id = et.employee_id
+JOIN territories t ON et.territory_id = t.territory_id
+JOIN regions r ON t.region_id = r.region_id
+ORDER BY r.region_description, t.description, e.last_name, e.first_name;
 
 
 
@@ -272,7 +279,11 @@ ORDER BY s.state_name;
 -- Finally, take the final result set and order by territory_id.
 SELECT t.territory_description, r.region_description 
 FROM territories t
-JOIN regions r ON t.region_id = r.region_id;
+JOIN regions r ON t.region_id = r.region_id
+-- WHERE t.territory_id NOT IN employee_territories et; <--My code
+
+WHERE t.territory_id NOT IN (SELECT et.territory_id FROM employees_territories et); -- <--Instructor's code
+
 
 
 -- 3.5
